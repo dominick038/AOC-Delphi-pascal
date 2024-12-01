@@ -13,9 +13,9 @@ uses
 begin
   var InputFile := TStringList.Create;
   try
-    InputFile.LoadFromFile('./input.txt');
-
     var Stopwatch := TStopwatch.StartNew;
+
+    InputFile.LoadFromFile('./input.txt');
 
     TAOCSolution.Solution
                 .Solve(InputFile);

@@ -50,26 +50,23 @@ begin
 
     LeftArr[I] := LeftInt;
     RightArr[I] := RightInt;
+
+    if FrequencyMap.ContainsKey(RightInt) then
+      FrequencyMap[RightInt] := FrequencyMap[RightInt] + 1
+    else
+      FrequencyMap.Add(RightInt, 1);
   end;
 
   TArray.Sort<Integer>(LeftArr);
   TArray.Sort<Integer>(RightArr);
 
   var Total := 0;
+  var TotalSimiliarityScore := 0;
   for var I := 0 to Length(LeftArr) - 1 do
   begin
     var RightVal := RightArr[I];
     Total := Total + Abs(LeftArr[I] - RightVal);
 
-    if FrequencyMap.ContainsKey(RightVal) then
-      FrequencyMap[RightVal] := FrequencyMap[RightVal] + 1
-    else
-      FrequencyMap.Add(RightVal, 1);
-  end;
-
-  var TotalSimiliarityScore := 0;
-  for var I := 0 to Length(LeftArr) - 1 do
-  begin
     var FrequencyValue: Integer;
     if FrequencyMap.TryGetValue(LeftArr[I], FrequencyValue) then
       TotalSimiliarityScore := TotalSimiliarityScore + LeftArr[I] * FrequencyValue;
