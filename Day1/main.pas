@@ -16,11 +16,9 @@ type
 
   TAOCSolution = class(TInterfacedObject, IAOCSolution)
   strict private
-    LeftArr: TArray<Integer>;
-    RightArr: TArray<Integer>;
+    LeftArr: array[0..999] of Integer;
+    RightArr: array[0..999] of Integer;
     FrequencyMap: TDictionary<Integer, Integer>;
-
-    function CompareVal(const L, R: Integer): Integer;
   public
     {$REGION 'Initialization'}
     class function  Solution: IAOCSolution;
@@ -37,32 +35,21 @@ uses
 
 { TAOCSolution }
 
-function TAOCSolution.CompareVal(const L, R: Integer): Integer;
-begin
-  if L > R then
-    Result := L - R
-  else if L < R then
-    Result := R - L
-  else 
-    Result := 0;
-end;
-
 procedure TAOCSolution.Solve(const Lines: TStringList);
 const
   SpaceChar: Char = ' ';
 begin
   FrequencyMap := TDictionary<Integer, Integer>.Create;
 
-  var Line: string;
-  for Line in Lines do
+  for var I := 0 to Lines.Count - 1 do
   begin
-    var Strings := Line.Split(SpaceChar);
+    var Strings := Lines[I].Split(SpaceChar);
 
     var LeftInt := StrToInt(Strings[0]);
     var RightInt := StrToInt(Strings[3]);
 
-    LeftArr := LeftArr + [LeftInt];
-    RightArr := RightArr + [RightInt];
+    LeftArr[I] := LeftInt;
+    RightArr[I] := RightInt;
   end;
 
   TArray.Sort<Integer>(LeftArr);
@@ -72,7 +59,7 @@ begin
   for var I := 0 to Length(LeftArr) - 1 do
   begin
     var RightVal := RightArr[I];
-    Total := Total + CompareVal(LeftArr[I], RightArr[I]);
+    Total := Total + Abs(LeftArr[I] - RightArr[I]);
 
     if FrequencyMap.ContainsKey(RightVal) then
       FrequencyMap[RightVal] := FrequencyMap[RightVal] + 1
@@ -83,9 +70,9 @@ begin
   var TotalSimiliarityScore := 0;
   for var I := 0 to Length(LeftArr) - 1 do
   begin
-    var LeftVal := LeftArr[I];
-    if FrequencyMap.ContainsKey(LeftVal) then
-      TotalSimiliarityScore := TotalSimiliarityScore + FrequencyMap[LeftVal] * LeftVal;
+    var FrequencyValue: Integer;
+    if FrequencyMap.TryGetValue(LeftArr[I], FrequencyValue) then
+      TotalSimiliarityScore := TotalSimiliarityScore + LeftArr[I] * FrequencyValue;
   end;
 
   WriteLn('Result 1:');
