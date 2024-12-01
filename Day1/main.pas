@@ -48,13 +48,14 @@ begin
 end;
 
 procedure TAOCSolution.Solve(const Lines: TStringList);
+const
+  SpaceChar: Char = ' ';
 begin
   FrequencyMap := TDictionary<Integer, Integer>.Create;
 
   var Line: string;
   for Line in Lines do
   begin
-    var SpaceChar: Char := ' ';
     var Strings := Line.Split(SpaceChar);
 
     var LeftInt := StrToInt(Strings[0]);
