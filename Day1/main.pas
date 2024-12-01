@@ -64,12 +64,12 @@ begin
   var TotalSimiliarityScore := 0;
   for var I := 0 to Length(LeftArr) - 1 do
   begin
-    var RightVal := RightArr[I];
-    Total := Total + Abs(LeftArr[I] - RightVal);
+    var LeftVal := LeftArr[I];
+    Total := Total + Abs(LeftArr[I] - RightArr[I]);
 
     var FrequencyValue: Integer;
-    if FrequencyMap.TryGetValue(LeftArr[I], FrequencyValue) then
-      TotalSimiliarityScore := TotalSimiliarityScore + LeftArr[I] * FrequencyValue;
+    if FrequencyMap.TryGetValue(LeftVal, FrequencyValue) then
+      TotalSimiliarityScore := TotalSimiliarityScore + LeftVal * FrequencyValue;
   end;
 
   WriteLn('Result 1:');
