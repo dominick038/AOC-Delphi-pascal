@@ -59,7 +59,7 @@ begin
   for var I := 0 to Length(LeftArr) - 1 do
   begin
     var RightVal := RightArr[I];
-    Total := Total + Abs(LeftArr[I] - RightArr[I]);
+    Total := Total + Abs(LeftArr[I] - RightVal);
 
     if FrequencyMap.ContainsKey(RightVal) then
       FrequencyMap[RightVal] := FrequencyMap[RightVal] + 1
