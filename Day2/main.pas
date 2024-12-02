@@ -43,25 +43,16 @@ begin
   for var Line: string in Lines do
   begin
     var Numbers := Line.Split([SpaceChar]);
-    var IsSafe := True;  
-    var IsNotSafe := 0;
+    var IsSafe := True;
     var ResultSign := -2; 
     
     for var I := Low(Numbers) to High(Numbers) - 1 do
     begin
       var Diff: Integer := StrToInt(Numbers[I + 1]) - StrToInt(Numbers[I]);
 
-//      if (Diff < -3) or (Diff > 3) then
-//      begin
-//        if IsNotSafe = 0 then
-//          IsSafe := False;
-//
-//        Inc(IsNotSafe)
-//      end;
-
-      var InRange := (Diff < -3) or (Diff > 3);
+      var OutOfRange := (Diff < -3) or (Diff > 3);
       var CurrSign := Sign(Diff);
-      if InRange or (ResultSign <> -2) and (CurrSign <> ResultSign) then;
+      if OutOfRange or ((ResultSign <> -2) and (CurrSign <> ResultSign)) then
       begin
         IsSafe := False;
         Break;
@@ -72,17 +63,12 @@ begin
 
     if IsSafe then
       Inc(SafeCount);
-
-    if IsNotSafe <= 1 then
-      Inc(DampVal)
     
   end;
 
   WriteLn(SafeCount);
   Writeln(DampVal);
 end;
-  
-
 
 {$REGION 'Initialization'}
 
