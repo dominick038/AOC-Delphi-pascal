@@ -15,7 +15,7 @@ type
 
   TAOCSolution = class(TInterfacedObject, IAOCSolution)
   strict private
-    function  IsSafe(const NumberA, NumberB: string; var ExpectedResultSign: Integer): Boolean;
+    function  IsSafe(const Numbers :TArray<string>): Boolean;
   public
     {$REGION 'Initialization'}
     class function  Solution: IAOCSolution;
@@ -33,17 +33,22 @@ uses
 
 { TAOCSolution }
 
-function TAOCSolution.IsSafe(const NumberA, NumberB: string; var ExpectedResultSign: Integer): Boolean;
+function TAOCSolution.IsSafe(const Numbers :TArray<string>): Boolean;
 begin
   Result := True;
-  var Diff: Integer := StrToInt(NumberA) - StrToInt(NumberB);
+  var IntialSign := -2;
 
-  var OutOfRange := (Diff < -3) or (Diff > 3);
-  var CurrentResultSign := Sign(Diff);
-  if OutOfRange or ((ExpectedResultSign <> -2) and (CurrentResultSign <> ExpectedResultSign)) then
-    Exit(False);
+  for var I := Low(Numbers) to High(Numbers) - 1 do
+  begin
+    var Diff: Integer := StrToInt(Numbers[I + 1]) - StrToInt(Numbers[I]);
 
-  ExpectedResultSign := CurrentResultSign;
+    var OutOfRange := (Diff < -3) or (Diff > 3);
+    var CurrentResultSign := Sign(Diff);
+    if OutOfRange or (CurrentResultSign = 0) or ((IntialSign <> -2) and (CurrentResultSign <> IntialSign)) then
+      Exit(False);
+
+    IntialSign := CurrentResultSign;
+  end;
 end;
 
 procedure TAOCSolution.Solve(const Lines: TStringList);
@@ -56,23 +61,21 @@ begin
   for var Line: string in Lines do
   begin
     var Numbers := Line.Split([SpaceChar]);
-    var Safe := True;
-    var SafeWithRemoved := True;
-    var ResultSign := -2;
-    var ResSignForThing := -2;
-    
-    for var I := Low(Numbers) to High(Numbers) - 1 do
+    var Safe := False;
+    var SafeWithRemoved := False;
+
+    if IsSafe(Numbers) then
+      Safe := True
+    else
     begin
-      if not IsSafe(Numbers[I + 1], Numbers[I], ResultSign) then
-        Safe := False
-      else
+      for var I := Low(Numbers) to Length(Numbers) do
       begin
-        for var J := Low(Numbers) to High(Numbers) - 1 do
+        var NumbersCopy := Copy(Numbers, Low(Numbers), Length(Numbers));
+        Delete(NumbersCopy, I, 1);
+        if IsSafe(NumbersCopy) then
         begin
-          var ArrCpy := Copy(Numbers, Low(Numbers), Length(Numbers));
-          Delete(ArrCpy, J, 1);
-          if not IsSafe(ArrCpy[J + 1], ArrCpy[J], ResSignForThing) then
-            SafeWithRemoved := False
+          SafeWithRemoved := True;
+          Break;
         end;
       end;
     end;
@@ -80,8 +83,8 @@ begin
     if Safe then
       Inc(SafeCount);
 
-    if SafeWithRemoved then
-      Inc(DampVal)
+    if SafeWithRemoved or Safe then
+      Inc(DampVal);
   end;
 
   WriteLn(SafeCount);
