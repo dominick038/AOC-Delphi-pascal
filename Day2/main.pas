@@ -43,8 +43,11 @@ begin
     var Diff: Integer := StrToInt(Numbers[I + 1]) - StrToInt(Numbers[I]);
 
     var OutOfRange := (Diff < -3) or (Diff > 3);
+    if OutOfRange then
+      Exit(False);
+
     var CurrentResultSign := Sign(Diff);
-    if OutOfRange or (CurrentResultSign = 0) or ((IntialSign <> -2) and (CurrentResultSign <> IntialSign)) then
+    if (CurrentResultSign = 0) or ((IntialSign <> -2) and (CurrentResultSign <> IntialSign)) then
       Exit(False);
 
     IntialSign := CurrentResultSign;
