@@ -26,12 +26,63 @@ type
 
 implementation
 
+uses
+  System.StrUtils,
+  System.SysUtils, 
+  System.Math;
+
 { TAOCSolution }
 
 procedure TAOCSolution.Solve(const Lines: TStringList);
+const
+  SpaceChar: Char = ' ';
 begin
+  var SafeCount: Integer := 0;
+  var DampVal := 0;
+  
+  for var Line: string in Lines do
+  begin
+    var Numbers := Line.Split([SpaceChar]);
+    var IsSafe := True;  
+    var IsNotSafe := 0;
+    var ResultSign := -2; 
+    
+    for var I := Low(Numbers) to High(Numbers) - 1 do
+    begin
+      var Diff: Integer := StrToInt(Numbers[I + 1]) - StrToInt(Numbers[I]);
 
+//      if (Diff < -3) or (Diff > 3) then
+//      begin
+//        if IsNotSafe = 0 then
+//          IsSafe := False;
+//
+//        Inc(IsNotSafe)
+//      end;
+
+      var InRange := (Diff < -3) or (Diff > 3);
+      var CurrSign := Sign(Diff);
+      if InRange or (ResultSign <> -2) and (CurrSign <> ResultSign) then;
+      begin
+        IsSafe := False;
+        Break;
+      end;
+
+      ResultSign := CurrSign;
+    end;
+
+    if IsSafe then
+      Inc(SafeCount);
+
+    if IsNotSafe <= 1 then
+      Inc(DampVal)
+    
+  end;
+
+  WriteLn(SafeCount);
+  Writeln(DampVal);
 end;
+  
+
 
 {$REGION 'Initialization'}
 
