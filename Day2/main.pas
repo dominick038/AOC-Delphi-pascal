@@ -15,7 +15,7 @@ type
 
   TAOCSolution = class(TInterfacedObject, IAOCSolution)
   strict private
-
+    function  IsSafe(const NumberA, NumberB: string; var ExpectedResultSign: Integer): Boolean;
   public
     {$REGION 'Initialization'}
     class function  Solution: IAOCSolution;
@@ -28,10 +28,23 @@ implementation
 
 uses
   System.StrUtils,
-  System.SysUtils, 
+  System.SysUtils,
   System.Math;
 
 { TAOCSolution }
+
+function TAOCSolution.IsSafe(const NumberA, NumberB: string; var ExpectedResultSign: Integer): Boolean;
+begin
+  Result := True;
+  var Diff: Integer := StrToInt(NumberA) - StrToInt(NumberB);
+
+  var OutOfRange := (Diff < -3) or (Diff > 3);
+  var CurrentResultSign := Sign(Diff);
+  if OutOfRange or ((ExpectedResultSign <> -2) and (CurrentResultSign <> ExpectedResultSign)) then
+    Exit(False);
+
+  ExpectedResultSign := CurrentResultSign;
+end;
 
 procedure TAOCSolution.Solve(const Lines: TStringList);
 const
@@ -43,27 +56,32 @@ begin
   for var Line: string in Lines do
   begin
     var Numbers := Line.Split([SpaceChar]);
-    var IsSafe := True;
-    var ResultSign := -2; 
+    var Safe := True;
+    var SafeWithRemoved := True;
+    var ResultSign := -2;
+    var ResSignForThing := -2;
     
     for var I := Low(Numbers) to High(Numbers) - 1 do
     begin
-      var Diff: Integer := StrToInt(Numbers[I + 1]) - StrToInt(Numbers[I]);
-
-      var OutOfRange := (Diff < -3) or (Diff > 3);
-      var CurrSign := Sign(Diff);
-      if OutOfRange or ((ResultSign <> -2) and (CurrSign <> ResultSign)) then
+      if not IsSafe(Numbers[I + 1], Numbers[I], ResultSign) then
+        Safe := False
+      else
       begin
-        IsSafe := False;
-        Break;
+        for var J := Low(Numbers) to High(Numbers) - 1 do
+        begin
+          var ArrCpy := Copy(Numbers, Low(Numbers), Length(Numbers));
+          Delete(ArrCpy, J, 1);
+          if not IsSafe(ArrCpy[J + 1], ArrCpy[J], ResSignForThing) then
+            SafeWithRemoved := False
+        end;
       end;
-
-      ResultSign := CurrSign;
     end;
 
-    if IsSafe then
+    if Safe then
       Inc(SafeCount);
-    
+
+    if SafeWithRemoved then
+      Inc(DampVal)
   end;
 
   WriteLn(SafeCount);
