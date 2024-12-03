@@ -38,10 +38,9 @@ const
   RegexPattern = 'mul\(\d*,\d*\)|don''t\(\)|do\(\)';
 begin
   Result := TList<TPair<Integer, Integer>>.Create;
-  var RegEx := TRegEx.Create(RegexPattern);
 
+  var RegEx := TRegEx.Create(RegexPattern);
   var Match := RegEx.Match(InputTxt);
-  var Count := 0;
   while Match.Success do
   begin
     var MatchVal := Match.Value;
@@ -84,7 +83,6 @@ begin
       IsEnabled := False;
       Continue;
     end;
-      
       
     if IsEnabled then
       TotalWithDos := TotalWithDos + (Pair.Key * Pair.Value);
