@@ -42,9 +42,18 @@ const
     [1, -1]
   ];
 
-  function Dfs(const X, Y: Integer; const Index: Integer): Boolean;
+  function Dfs(const X, Y: Integer; const Index: Integer; const CurrentDirection: TArray<Integer> = nil): Boolean;
   begin
+    Result := False;
 
+    if CurrentDirection <> nil then
+      Exit(
+        Dfs(X + CurrentDirection[0], Y + CurrentDirection[1], Index + 1, CurrentDirection)
+      );
+
+    for var Direction in Directions do
+      if Dfs(X, Y, Index + 1, Direction) then
+        Exit(True);
   end;
   
 begin
@@ -52,7 +61,7 @@ begin
 
   for var Y := 0 to Lines.Count - 1 do
     for var X := Low(Lines[Y]) to High(Lines[Y]) do
-      if Dfs(Y, X, 0) then
+      if Dfs(X, Y, 0) then
         inc(Count);
 end;
 
