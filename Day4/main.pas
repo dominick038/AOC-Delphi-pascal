@@ -15,7 +15,6 @@ type
 
   TAOCSolution = class(TInterfacedObject, IAOCSolution)
   strict private
-
   public
     {$REGION 'Initialization'}
     class function  Solution: IAOCSolution;
@@ -28,9 +27,33 @@ implementation
 
 { TAOCSolution }
 
-procedure TAOCSolution.Solve(const Lines: TStringList);
-begin
 
+
+procedure TAOCSolution.Solve(const Lines: TStringList);
+const
+  Directions: TArray<TArray<Integer>> = [
+    [0, 1],
+    [1, 0],
+    [1, 1],
+    [0, -1],
+    [-1, 0],
+    [-1, -1],
+    [-1, 1],
+    [1, -1]
+  ];
+
+  function Dfs(const X, Y: Integer; const Index: Integer): Boolean;
+  begin
+
+  end;
+  
+begin
+  var Count := 0;
+
+  for var Y := 0 to Lines.Count - 1 do
+    for var X := Low(Lines[Y]) to High(Lines[Y]) do
+      if Dfs(Y, X, 0) then
+        inc(Count);
 end;
 
 {$REGION 'Initialization'}
