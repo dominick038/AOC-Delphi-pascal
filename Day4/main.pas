@@ -115,8 +115,14 @@ begin
           Inc(XmasCount);
     end;
 
+  WriteLn('Part 1:');
   WriteLn(XmasCount);
+  WriteLn;
+
+  WriteLn('Part 2:');
   WriteLn(MaxXCount);
+  WriteLn;
+
 end;
 
 {$REGION 'Initialization'}
