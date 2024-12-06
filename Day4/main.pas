@@ -66,32 +66,17 @@ begin
   if XOutOfBounds or YOutOfBounds then
     Exit;
 
-  var TopLeftToRight :=
-    (
-      (FLines[Y - 1][X - 1] = LetterArr[0])
-      and
-      (FLines[Y + 1][X + 1] = LetterArr[1])
-    )
-    or
-    (
-      (FLines[Y - 1][X - 1] = LetterArr[1])
-      and
-      (FLines[Y + 1][X + 1] = LetterArr[0])
-    );
+  var CheckDiagonals :=
+      function(A, B: Char): Boolean
+      begin
+        Result :=
+          ((A = LetterArr[0]) and (B = LetterArr[1]))
+          or
+          ((A = LetterArr[1]) and (B = LetterArr[0]));
+      end;
 
-  var TopRightToLeft :=
-    (
-      (FLines[Y - 1][X + 1] = LetterArr[0])
-      and
-      (FLines[Y + 1][X - 1] = LetterArr[1])
-    )
-    or
-    (
-      (FLines[Y - 1][X + 1] = LetterArr[1])
-      and
-      (FLines[Y + 1][X - 1] = LetterArr[0])
-    );
-
+  var TopLeftToRight := CheckDiagonals(FLines[Y - 1][X - 1], FLines[Y + 1][X + 1]);
+  var TopRightToLeft := CheckDiagonals(FLines[Y - 1][X + 1], FLines[Y + 1][X - 1]);
 
   if TopLeftToRight and TopRightToLeft then
     Result := True;
