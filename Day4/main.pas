@@ -17,7 +17,8 @@ type
   strict private
     MaxX, MaxY: integer;
     FLines: TStringList;
-    
+
+    function  FindXmas(const X, Y: Integer): Boolean;
     function  Dfs(const X, Y: Integer; const CurrentDirection: TArray<Integer>; const Index: Integer = 1; const SearchWord: string = 'XMAS'): Boolean;
   public
     {$REGION 'Initialization'}
@@ -53,6 +54,49 @@ begin
     
 end;
 
+function TAOCSolution.FindXmas(const X, Y: Integer): Boolean;
+const
+  LetterArr: TArray<string> = ['M', 'S'];
+begin
+  Result := False;
+
+  var XOutOfBounds := (X - 1 < 1) or (X + 1 > MaxX);
+  var YOutOfBounds := (Y - 1 < 0) or (Y + 1 > MaxY);
+
+  if XOutOfBounds or YOutOfBounds then
+    Exit;
+
+  var TopLeftToRight :=
+    (
+      (FLines[Y - 1][X - 1] = LetterArr[0])
+      and
+      (FLines[Y + 1][X + 1] = LetterArr[1])
+    )
+    or
+    (
+      (FLines[Y - 1][X - 1] = LetterArr[1])
+      and
+      (FLines[Y + 1][X + 1] = LetterArr[0])
+    );
+
+  var TopRightToLeft :=
+    (
+      (FLines[Y - 1][X + 1] = LetterArr[0])
+      and
+      (FLines[Y + 1][X - 1] = LetterArr[1])
+    )
+    or
+    (
+      (FLines[Y - 1][X + 1] = LetterArr[1])
+      and
+      (FLines[Y + 1][X - 1] = LetterArr[0])
+    );
+
+
+  if TopLeftToRight and TopRightToLeft then
+    Result := True;
+end;
+
 procedure TAOCSolution.Solve(const Lines: TStringList);
 const
   Directions: TArray<TArray<Integer>> = [
@@ -71,14 +115,23 @@ begin
   MaxX := Length(Lines[0]);
   FLines := Lines;
 
-  var Count := 0;
+  var XmasCount := 0;
+  var MaxXCount := 0;
   for var Y := 0 to Lines.Count - 1 do
     for var X := Low(Lines[Y]) to High(Lines[Y]) do
+    begin
+      if FLines[Y][X] = 'A' then
+        if FindXmas(X, Y) then
+          Inc(MaxXCount);
+
+
       for var Direction in Directions do
         if Dfs(X, Y, Direction) then
-          Inc(Count);
+          Inc(XmasCount);
+    end;
 
-  WriteLn(Count);
+  WriteLn(XmasCount);
+  WriteLn(MaxXCount);
 end;
 
 {$REGION 'Initialization'}
