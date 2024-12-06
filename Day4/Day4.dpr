@@ -7,21 +7,19 @@ program Day4;
 uses
   System.SysUtils,
   System.Classes,
-  Main in 'Main.pas';
+  Main in 'Main.pas',
+  System.Diagnostics;
 
 begin
   var InputFile := TStringList.Create;
   try
+    var Stopwatch := TStopwatch.StartNew;
     InputFile.LoadFromFile('./input.txt');
 
-    try
-      TAOCSolution.Solution
-                  .Solve(InputFile);
-    except
-      on E: Exception do
-        WriteLn(E.Message);
-    end;
+    TAOCSolution.Solution
+                .Solve(InputFile);
 
+    WriteLn(Format('%f ms elapsed', [Stopwatch.Elapsed.TotalMilliseconds]));
   finally
     InputFile.Free;
   end;
