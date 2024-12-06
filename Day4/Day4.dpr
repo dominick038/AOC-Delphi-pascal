@@ -14,8 +14,14 @@ begin
   try
     InputFile.LoadFromFile('./input.txt');
 
-    TAOCSolution.Solution
-                .Solve(InputFile);
+    try
+      TAOCSolution.Solution
+                  .Solve(InputFile);
+    except
+      on E: Exception do
+        WriteLn(E.Message);
+    end;
+
   finally
     InputFile.Free;
   end;

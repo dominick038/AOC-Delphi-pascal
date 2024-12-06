@@ -12,9 +12,13 @@ type
     procedure Solve(const Lines: TStringList);
   end;
   {$ENDREGION}
-
+  
   TAOCSolution = class(TInterfacedObject, IAOCSolution)
   strict private
+    MaxX, MaxY: integer;
+    FLines: TStringList;
+    
+    function  Dfs(const X, Y: Integer; const CurrentDirection: TArray<Integer>; const Index: Integer = 1; const SearchWord: string = 'XMAS'): Boolean;
   public
     {$REGION 'Initialization'}
     class function  Solution: IAOCSolution;
@@ -25,9 +29,29 @@ type
 
 implementation
 
+uses
+  System.SysUtils;
+
 { TAOCSolution }
 
+function TAOCSolution.Dfs(const X, Y: Integer; const CurrentDirection: TArray<Integer>; const Index: Integer; const SearchWord: string): Boolean;
+begin
+  Result := False;
 
+  var XOutOfBounds := (X < 1) or (X > MaxX);
+  var YOutOfBounds := (Y < 0) or (Y > MaxY);
+
+  if XOutOfBounds or YOutOfBounds or (Index > Length(SearchWord)) or (SearchWord[Index] <> FLines[Y][X]) then
+    Exit;
+
+  if (Index = Length(SearchWord)) and (SearchWord[Index] = FLines[Y][X]) then
+    Exit(True);
+
+  Exit(
+    Dfs(X + CurrentDirection[0], Y + CurrentDirection[1], CurrentDirection, Index + 1)
+  );
+    
+end;
 
 procedure TAOCSolution.Solve(const Lines: TStringList);
 const
@@ -42,27 +66,19 @@ const
     [1, -1]
   ];
 
-  function Dfs(const X, Y: Integer; const Index: Integer; const CurrentDirection: TArray<Integer> = nil): Boolean;
-  begin
-    Result := False;
-
-    if CurrentDirection <> nil then
-      Exit(
-        Dfs(X + CurrentDirection[0], Y + CurrentDirection[1], Index + 1, CurrentDirection)
-      );
-
-    for var Direction in Directions do
-      if Dfs(X, Y, Index + 1, Direction) then
-        Exit(True);
-  end;
-  
 begin
-  var Count := 0;
+  MaxY := Lines.Count - 1;
+  MaxX := Length(Lines[0]);
+  FLines := Lines;
 
+  var Count := 0;
   for var Y := 0 to Lines.Count - 1 do
     for var X := Low(Lines[Y]) to High(Lines[Y]) do
-      if Dfs(X, Y, 0) then
-        inc(Count);
+      for var Direction in Directions do
+        if Dfs(X, Y, Direction) then
+          Inc(Count);
+
+  WriteLn(Count);
 end;
 
 {$REGION 'Initialization'}
