@@ -36,23 +36,33 @@ uses
 { TAOCSolution }
 
 procedure TAOCSolution.Solve(const Lines: TStringList);
+var
+  I: Integer;
 begin
   // This copy setup is just for me to see what happens to performance compared to .Split and then parsing from that...
   FGrammarRules := TDictionary<Integer, TArray<Integer>>.Create;
-  for var I := 0 to 1175 do
+  var ContinueIndex := 0;
+  for I := 0 to Lines.Count do
   begin
+    if Lines[I] = '' then
+    begin
+      ContinueIndex := I + 1;
+      Break;
+    end;
+
     var Index := StrToInt(Copy(Lines[I], 1, 2));
     if FGrammarRules.ContainsKey(Index) then
       FGrammarRules[Index] := FGrammarRules[Index] + [StrToInt(Copy(Lines[I], 4, 2))]
     else
       FGrammarRules.Add(Index, [StrToInt(Copy(Lines[I], 4, 2))]);
+
   end;
 
   var MiddleNumSum := 0;
   FReorderValue := 0;
   
   // This copy setup is just for me to see what happens to performance compared to .Split and then parsing from that...
-  for var I := 1177 to Lines.Count - 1 do
+  for I := ContinueIndex to Lines.Count - 1 do
   begin
     var InputArray: TArray<Integer>;
     var AmountToCopy := Length(Lines[I]) div 3 + 1;
@@ -76,9 +86,10 @@ var
   // For some reason the debugger freaks out if I set the vars inside the loops so we do this
   I: Integer;
   GrammarRuleArray: TArray<Integer>;
+  Rule: Integer;
 begin
   Result := True;
-  FillChar(LookupArray, System.SizeOf(LookupArray), 0);
+  FillChar(LookupArray, System.SizeOf(LookupArray), -1);
 
   for I := 0 to InputArrayCount do
     LookupArray[InputArray[I]] := I;
@@ -88,10 +99,10 @@ begin
     var InputValue := InputArray[I];
     if FGrammarRules.TryGetValue(InputValue, GrammarRuleArray) then
     begin
-      for var Rule in GrammarRuleArray do
+      for Rule in GrammarRuleArray do
       begin
         var InputIndex := LookupArray[InputValue];
-        if LookupArray[Rule] <> 0 then  
+        if LookupArray[Rule] <> -1 then  
           Result := Result and (LookupArray[Rule] > InputIndex)
       end;
     end;
@@ -100,17 +111,18 @@ begin
   // Pt 2 || This can probably be better but I am too lazy to optimize it rn...
   if not Result then
   begin
-    for I := 0 to InputArrayCount do
+    I := 0;
+    while (I <= InputArrayCount) do
     begin
       var InputValue := InputArray[I];
       if FGrammarRules.TryGetValue(InputValue, GrammarRuleArray) then
       begin
-        for var Rule2 in GrammarRuleArray do
+        for Rule in GrammarRuleArray do
         begin
           var InputIndex := LookupArray[InputValue];
-          var RuleIndex := LookupArray[Rule2];
+          var RuleIndex := LookupArray[Rule];
 
-          if (RuleIndex <> 0) and (RuleIndex < InputIndex) then
+          if (RuleIndex <> -1) and (RuleIndex < InputIndex) then
           begin
             // Move InputValue to RuleIndex
             // Step 1: Extract InputValue and shift elements to the right
@@ -123,9 +135,13 @@ begin
             // Step 3: Update LookupArray to reflect the changes
             for var K := 0 to InputArrayCount do
               LookupArray[InputArray[K]] := K;
+
+            // Step 4: Restart validation from 0
+            I := 0;
           end;
         end;
       end;
+      Inc(I);
     end;
 
     FReorderValue := FReorderValue + InputArray[(InputArrayCount + 1) div 2];
