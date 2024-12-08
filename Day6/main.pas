@@ -108,12 +108,14 @@ const
 
 begin
   var StartingPosition := FindStartingVec;
-  WriteLn(Lines[StartingPosition.Y][StartingPosition.X]);
-
   MaxX := Length(Lines[0]);
   MaxY := Lines.Count - 1;
-  
-  WriteLn(CountPath(0, StartingPosition, UP));
+
+  var StartingString := Lines[StartingPosition.Y];
+  StartingString[StartingPosition.X] := 'X';
+  Lines[StartingPosition.Y] := StartingString;
+
+  WriteLn(CountPath(1, StartingPosition, UP));
 end;
 
 {$REGION 'Initialization'}
